@@ -1,0 +1,261 @@
+digraph FileBlogSystem {
+    rankdir=TB;
+    node [shape=record, style=filled, fillcolor=lightblue];
+    edge [dir=back, arrowtail=empty];
+
+    // Styling
+    graph [fontname="Arial", fontsize=10, splines=ortho];
+    node [fontname="Arial", fontsize=9];
+    edge [fontname="Arial", fontsize=8];
+
+    subgraph cluster_0 {
+        label="FileBlogSystem.Endpoints";
+        style=dashed;
+        color=gray;
+
+        AdminEndpoints [
+            label="{AdminEndpoints|||- IsValidUsername()\l|+ MapAdminEndpoints()\l|- GetAllUsersAsync()\l|- PromoteUserToAdminAsync()\l|- CheckAdminStatus()\l}"
+            fillcolor=lightgray
+        ];
+        CommentsEndpoints [
+            label="{CommentsEndpoints|||+ MapCommentsEndpoints()\l|- if()\l}"
+            fillcolor=lightgray
+        ];
+        AuthEndpoints [
+            label="{AuthEndpoints|||+ MapAuthEndpoints()\l|- LoginUserAsync()\l|- RegisterUserAsync()\l|- ChangeUserPasswordAsync()\l|- if()\l}"
+            fillcolor=lightgray
+        ];
+        BlogPostEndpoints [
+            label="{BlogPostEndpoints|||- IsValidSlug()\l|- IsValidCategory()\l|- IsValidTag()\l|- IsValidUsername()\l|+ MapBlogPostEndpoints()\l}"
+            fillcolor=lightgray
+        ];
+        UserEndpoints [
+            label="{UserEndpoints|||+ MapUserEndpoints()\l|- IsValidUsername()\l|- IsValidEmail()\l|- IsValidOtp()\l|- IsValidPassword()\l}"
+            fillcolor=lightgray
+        ];
+    }
+
+    subgraph cluster_1 {
+        label="FileBlogSystem.Hubs";
+        style=dashed;
+        color=gray;
+
+        NotificationHub [
+            label="{NotificationHub|||- NotificationHub()\l|- OnConnectedAsync()\l}"
+            fillcolor=lightblue
+        ];
+    }
+
+    subgraph cluster_2 {
+        label="FileBlogSystem.Interfaces";
+        style=dashed;
+        color=gray;
+
+        ISearchService [
+            label="{\<\<interface\>\>\nISearchService|
+}"
+            fillcolor=lightyellow
+        ];
+        IUserService [
+            label="{\<\<interface\>\>\nIUserService|
+}"
+            fillcolor=lightyellow
+        ];
+        IBlogPostService [
+            label="{\<\<interface\>\>\nIBlogPostService|
+}"
+            fillcolor=lightyellow
+        ];
+        IAdminService [
+            label="{\<\<interface\>\>\nIAdminService|
+}"
+            fillcolor=lightyellow
+        ];
+    }
+
+    subgraph cluster_3 {
+        label="FileBlogSystem.Models";
+        style=dashed;
+        color=gray;
+
+        ResetPasswordRequest [
+            label="{ResetPasswordRequest|||+ Username: string\l|+ OTPCode: string\l|+ NewPassword: string\l}"
+            fillcolor=lightblue
+        ];
+        ForgotPasswordRequest [
+            label="{ForgotPasswordRequest|||+ Username: string\l|+ Email: string\l}"
+            fillcolor=lightblue
+        ];
+        User [
+            label="{User|||+ Username: string\l|+ Email: string\l|+ PasswordHash: string\l|+ Role: string\l|+ CreatedAt: DateTime\l}"
+            fillcolor=lightblue
+        ];
+        UpdateProfileRequest [
+            label="{UpdateProfileRequest}"
+            fillcolor=lightblue
+        ];
+        RegisterRequest [
+            label="{RegisterRequest|||+ Username: string\l|+ Email: string\l|+ Password: string\l}"
+            fillcolor=lightblue
+        ];
+        Notification [
+            label="{Notification|||+ Id: int\l|+ Message: string\l|+ Link: string\l|+ IsRead: bool\l|+ CreatedAt: DateTime\l}"
+            fillcolor=lightblue
+        ];
+        VerifyOtpRequest [
+            label="{VerifyOtpRequest|||+ Username: string\l|+ OTPCode: string\l}"
+            fillcolor=lightblue
+        ];
+        Post [
+            label="{Post|||+ Id: string\l|+ Title: string\l|+ Description: string\l|+ Body: string\l|+ Author: string\l|||- Post()\l}"
+            fillcolor=lightblue
+        ];
+        AddCommentDto [
+            label="{AddCommentDto|||+ Content: string\l}"
+            fillcolor=lightblue
+        ];
+        ChangePasswordRequest [
+            label="{ChangePasswordRequest|||+ CurrentPassword: string\l|+ NewPassword: string\l}"
+            fillcolor=lightblue
+        ];
+        Comment [
+            label="{Comment|||+ Id: string\l|+ Content: string\l|+ Author: string\l|+ CreatedAt: DateTime\l}"
+            fillcolor=lightblue
+        ];
+        CreatePostRequest [
+            label="{CreatePostRequest|||+ Title: string\l|+ Description: string\l|+ Body: string\l|+ Tags: List<string>\l|+ Categories: List<string>\l}"
+            fillcolor=lightblue
+        ];
+        LoginRequest [
+            label="{LoginRequest|||+ Username: string\l|+ Password: string\l}"
+            fillcolor=lightblue
+        ];
+    }
+
+    subgraph cluster_4 {
+        label="FileBlogSystem.Repositories";
+        style=dashed;
+        color=gray;
+
+        FilePostRepository [
+            label="{FilePostRepository|||- GetLock()\l|- SemaphoreSlim()\l|- FilePostRepository()\l|- LoadPostAsync()\l|- IsUserActiveAsync()\l}"
+            fillcolor=lightblue
+        ];
+        FileCommentRepository [
+            label="{FileCommentRepository|||- FileCommentRepository()\l|- FindPostDirectoryBySlugAsync()\l|+ GetCommentByIdAsync()\l|+ CreateCommentAsync()\l|- FindPostDirectoryBySlugAsync()\l}"
+            fillcolor=lightblue
+        ];
+        FileUserRepository [
+            label="{FileUserRepository|||- FileUserRepository()\l|+ GetUserByUsernameAsync()\l|+ GetUserByEmailAsync()\l|+ UserExistsAsync()\l|- GetUserByUsernameAsync()\l}"
+            fillcolor=lightblue
+        ];
+    }
+
+    subgraph cluster_5 {
+        label="FileBlogSystem.Repositories.Interfaces";
+        style=dashed;
+        color=gray;
+
+        IUserRepository [
+            label="{\<\<interface\>\>\nIUserRepository|
+}"
+            fillcolor=lightyellow
+        ];
+        IPostRepository [
+            label="{\<\<interface\>\>\nIPostRepository|
+}"
+            fillcolor=lightyellow
+        ];
+        ICommentRepository [
+            label="{\<\<interface\>\>\nICommentRepository|
+}"
+            fillcolor=lightyellow
+        ];
+    }
+
+    subgraph cluster_6 {
+        label="FileBlogSystem.Services";
+        style=dashed;
+        color=gray;
+
+        INotificationService [
+            label="{\<\<interface\>\>\nINotificationService|
+}"
+            fillcolor=lightyellow
+        ];
+        ICommentService [
+            label="{\<\<interface\>\>\nICommentService|
+}"
+            fillcolor=lightyellow
+        ];
+        EmailService [
+            label="{EmailService|||- EmailService()\l|- SmtpClient()\l|- NetworkCredential()\l|+ SendPasswordResetEmail()\l|- MailMessage()\l}"
+            fillcolor=lightblue
+        ];
+        LuceneSearchService [
+            label="{LuceneSearchService|||- LuceneSearchService()\l|- StandardAnalyzer()\l|- GetWriter()\l|- IndexWriterConfig()\l|- IndexWriter()\l}"
+            fillcolor=lightblue
+        ];
+        NotificationService [
+            label="{NotificationService|||- NotificationService()\l|+ SendNotificationAsync()\l|- if()\l|- if()\l|- GetAllAsync()\l}"
+            fillcolor=lightblue
+        ];
+        AdminService [
+            label="{AdminService|||- AdminService()\l|- DirectoryInfo()\l|- UserDirectoryExists()\l|- SanitizeDirectoryName()\l|+ PromoteUserToAdmin()\l}"
+            fillcolor=lightblue
+        ];
+        PasswordService [
+            label="{PasswordService|||+ HashPassword()\l|+ VerifyPassword()\l|+ GenerateAndStoreResetToken()\l|- Random()\l|+ ValidateResetToken()\l}"
+            fillcolor=lightblue
+        ];
+        UserService [
+            label="{UserService|||- UserService()\l|+ LoginUser()\l|- if()\l|+ RegisterUser()\l|- if()\l}"
+            fillcolor=lightblue
+        ];
+        BlogPostService [
+            label="{BlogPostService|||- BlogPostService()\l|+ GetAllPosts()\l|+ GetPostsByCategory()\l|+ GetPostsByTag()\l|- if()\l}"
+            fillcolor=lightblue
+        ];
+        CommentService [
+            label="{CommentService|||- CommentService()\l|+ AddCommentAsync()\l|- if()\l|+ GetCommentByIdAsync()\l|+ UpdateCommentAsync()\l}"
+            fillcolor=lightblue
+        ];
+        ImageService [
+            label="{ImageService|||- SaveAndCompressAsync()\l|- InvalidOperationException()\l|- Size()\l|- SaveWithFormatAsync()\l|- SaveAndCompressFromBase64Async()\l}"
+            fillcolor=lightblue
+        ];
+    }
+
+    // Relationships
+    LuceneSearchService -> ISearchService [arrowtail=empty, style=dashed];
+    LuceneSearchService -> IDisposable [arrowtail=empty];
+    NotificationService -> INotificationService [arrowtail=empty, style=dashed];
+    AdminService -> IAdminService [arrowtail=empty, style=dashed];
+    UserService -> IUserService [arrowtail=empty, style=dashed];
+    BlogPostService -> IBlogPostService [arrowtail=empty, style=dashed];
+    CommentService -> ICommentService [arrowtail=empty, style=dashed];
+    ScheduledPostPublisher -> BackgroundService [arrowtail=empty];
+    NotificationHub -> Hub [arrowtail=empty];
+    FilePostRepository -> IPostRepository [arrowtail=empty, style=dashed];
+    FileCommentRepository -> ICommentRepository [arrowtail=empty, style=dashed];
+    FileUserRepository -> IUserRepository [arrowtail=empty, style=dashed];
+    BlogPostService -> IPostRepository [arrowtail=vee, style=solid, color=gray];
+    BlogPostService -> ISearchService [arrowtail=vee, style=solid, color=gray];
+    BlogPostService -> INotificationService [arrowtail=vee, style=solid, color=gray];
+    BlogPostService -> ImageService [arrowtail=vee, style=solid, color=gray];
+    UserService -> IUserRepository [arrowtail=vee, style=solid, color=gray];
+    UserService -> PasswordService [arrowtail=vee, style=solid, color=gray];
+    UserService -> JwtService [arrowtail=vee, style=solid, color=gray];
+    UserService -> EmailService [arrowtail=vee, style=solid, color=gray];
+    CommentService -> ICommentRepository [arrowtail=vee, style=solid, color=gray];
+    CommentService -> INotificationService [arrowtail=vee, style=solid, color=gray];
+    AdminService -> IUserRepository [arrowtail=vee, style=solid, color=gray];
+    AdminService -> IPostRepository [arrowtail=vee, style=solid, color=gray];
+    FilePostRepository -> IPostRepository [arrowtail=vee, style=solid, color=gray];
+    FileUserRepository -> IUserRepository [arrowtail=vee, style=solid, color=gray];
+    FileCommentRepository -> ICommentRepository [arrowtail=vee, style=solid, color=gray];
+    AuthEndpoints -> IUserService [arrowtail=vee, style=solid, color=gray];
+    UserEndpoints -> IUserService [arrowtail=vee, style=solid, color=gray];
+    AdminEndpoints -> IAdminService [arrowtail=vee, style=solid, color=gray];
+    CommentsEndpoints -> ICommentService [arrowtail=vee, style=solid, color=gray];
+}
