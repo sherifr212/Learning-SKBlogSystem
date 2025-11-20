@@ -1,0 +1,317 @@
+@startuml FileBlogSystem
+!theme plain
+skinparam classAttributeIconSize 0
+skinparam classFontSize 10
+skinparam packageStyle rectangle
+
+package "Endpoints" {
+    class AdminEndpoints {
+        -IsValidUsername()
+        +MapAdminEndpoints()
+        -GetAllUsersAsync()
+        -PromoteUserToAdminAsync()
+        -CheckAdminStatus()
+        -BackfillPublishedCounts()
+    }
+    class CommentsEndpoints {
+        +MapCommentsEndpoints()
+        -if()
+    }
+    class AuthEndpoints {
+        +MapAuthEndpoints()
+        -LoginUserAsync()
+        -RegisterUserAsync()
+        -ChangeUserPasswordAsync()
+        -if()
+        -IsValidEmail()
+    }
+    class BlogPostEndpoints {
+        -IsValidSlug()
+        -IsValidCategory()
+        -IsValidTag()
+        -IsValidUsername()
+        +MapBlogPostEndpoints()
+        -GetPublishedPostsAsync()
+        -GetPostsAsync()
+        -GetPostsByCategoryAsync()
+        ...
+    }
+    class UserEndpoints {
+        +MapUserEndpoints()
+        -IsValidUsername()
+        -IsValidEmail()
+        -IsValidOtp()
+        -IsValidPassword()
+        -GetNotificationsAsync()
+        -if()
+        -password()
+    }
+}
+
+package "Hubs" {
+    class NotificationHub {
+        -NotificationHub()
+        -OnConnectedAsync()
+    }
+}
+
+package "Interfaces" {
+    interface ISearchService {
+    }
+    interface IUserService {
+    }
+    interface IBlogPostService {
+    }
+    interface IAdminService {
+    }
+}
+
+package "Models" {
+    class ResetPasswordRequest {
+        +Username: string
+        +OTPCode: string
+        +NewPassword: string
+    }
+    class ForgotPasswordRequest {
+        +Username: string
+        +Email: string
+    }
+    class User {
+        +Username: string
+        +Email: string
+        +PasswordHash: string
+        +Role: string
+        +CreatedAt: DateTime
+        +ProfilePictureUrl: string
+        +Bio: string
+        +LastLoginDate: DateTime
+        ...
+    }
+    class UpdateProfileRequest {
+    }
+    class RegisterRequest {
+        +Username: string
+        +Email: string
+        +Password: string
+    }
+    class Notification {
+        +Id: int
+        +Message: string
+        +Link: string
+        +IsRead: bool
+        +CreatedAt: DateTime
+    }
+    class VerifyOtpRequest {
+        +Username: string
+        +OTPCode: string
+    }
+    class Post {
+        +Id: string
+        +Title: string
+        +Description: string
+        +Body: string
+        +Author: string
+        +PublishedDate: DateTime
+        +Tags: List<string>
+        +Categories: List<string>
+        ...
+        -Post()
+    }
+    class AddCommentDto {
+        +Content: string
+    }
+    class ChangePasswordRequest {
+        +CurrentPassword: string
+        +NewPassword: string
+    }
+    class Comment {
+        +Id: string
+        +Content: string
+        +Author: string
+        +CreatedAt: DateTime
+    }
+    class CreatePostRequest {
+        +Title: string
+        +Description: string
+        +Body: string
+        +Tags: List<string>
+        +Categories: List<string>
+    }
+    class LoginRequest {
+        +Username: string
+        +Password: string
+    }
+}
+
+package "Repositories" {
+    class FilePostRepository {
+        -GetLock()
+        -SemaphoreSlim()
+        -FilePostRepository()
+        -LoadPostAsync()
+        -IsUserActiveAsync()
+        -GetAllPostsAsync()
+        +GetPostBySlugAsync()
+        -LoadPostAsync()
+        ...
+    }
+    class FileCommentRepository {
+        -FileCommentRepository()
+        -FindPostDirectoryBySlugAsync()
+        +GetCommentByIdAsync()
+        +CreateCommentAsync()
+        -FindPostDirectoryBySlugAsync()
+        -InvalidOperationException()
+        -if()
+        +UpdateCommentAsync()
+        ...
+    }
+    class FileUserRepository {
+        -FileUserRepository()
+        +GetUserByUsernameAsync()
+        +GetUserByEmailAsync()
+        +UserExistsAsync()
+        -GetUserByUsernameAsync()
+        +EmailExistsAsync()
+        -GetUserByEmailAsync()
+        +IsUserActiveAsync()
+        ...
+    }
+}
+
+package "Interfaces" {
+    interface IUserRepository {
+    }
+    interface IPostRepository {
+    }
+    interface ICommentRepository {
+    }
+}
+
+package "Services" {
+    interface INotificationService {
+    }
+    interface ICommentService {
+    }
+    class EmailService {
+        -EmailService()
+        -SmtpClient()
+        -NetworkCredential()
+        +SendPasswordResetEmail()
+        -MailMessage()
+        +SendOtpEmail()
+        -MailMessage()
+    }
+    class LuceneSearchService {
+        -LuceneSearchService()
+        -StandardAnalyzer()
+        -GetWriter()
+        -IndexWriterConfig()
+        -IndexWriter()
+        +RebuildIndex()
+        -if()
+        -StringField()
+        ...
+    }
+    class NotificationService {
+        -NotificationService()
+        +SendNotificationAsync()
+        -if()
+        -if()
+        -GetAllAsync()
+        +MarkAsReadAsync()
+        -if()
+    }
+    class AdminService {
+        -AdminService()
+        -DirectoryInfo()
+        -UserDirectoryExists()
+        -SanitizeDirectoryName()
+        +PromoteUserToAdmin()
+        +GetAllUsers()
+        +BackfillPublishedCounts()
+    }
+    class PasswordService {
+        +HashPassword()
+        +VerifyPassword()
+        +GenerateAndStoreResetToken()
+        -Random()
+        +ValidateResetToken()
+        +ClearResetToken()
+    }
+    class UserService {
+        -UserService()
+        +LoginUser()
+        -if()
+        +RegisterUser()
+        -if()
+        -if()
+        +GetUserProfile()
+        -profile()
+        ...
+    }
+    class BlogPostService {
+        -BlogPostService()
+        +GetAllPosts()
+        +GetPostsByCategory()
+        +GetPostsByTag()
+        -if()
+        +GetUserDrafts()
+        +CreatePostAsync()
+        -naming()
+        ...
+    }
+    class CommentService {
+        -CommentService()
+        +AddCommentAsync()
+        -if()
+        +GetCommentByIdAsync()
+        +UpdateCommentAsync()
+        -if()
+        +DeleteCommentAsync()
+        +GetCommentsCountForPostAsync()
+        ...
+    }
+    class ImageService {
+        -SaveAndCompressAsync()
+        -InvalidOperationException()
+        -Size()
+        -SaveWithFormatAsync()
+        -SaveAndCompressFromBase64Async()
+        -InvalidOperationException()
+        -MemoryStream()
+        -Size()
+        ...
+    }
+}
+
+%% Inheritance and Implementation
+LuceneSearchService ..|> ISearchService
+LuceneSearchService --|> IDisposable
+NotificationService ..|> INotificationService
+AdminService ..|> IAdminService
+UserService ..|> IUserService
+BlogPostService ..|> IBlogPostService
+CommentService ..|> ICommentService
+ScheduledPostPublisher --|> BackgroundService
+NotificationHub --|> Hub
+FilePostRepository ..|> IPostRepository
+FileCommentRepository ..|> ICommentRepository
+FileUserRepository ..|> IUserRepository
+
+%% Key Dependencies
+BlogPostService --> IPostRepository
+BlogPostService --> ISearchService
+BlogPostService --> INotificationService
+UserService --> IUserRepository
+UserService --> PasswordService
+UserService --> JwtService
+CommentService --> ICommentRepository
+CommentService --> INotificationService
+AdminService --> IUserRepository
+AdminService --> IPostRepository
+FilePostRepository --> IPostRepository
+FileUserRepository --> IUserRepository
+FileCommentRepository --> ICommentRepository
+
+@enduml
