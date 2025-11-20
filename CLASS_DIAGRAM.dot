@@ -228,14 +228,11 @@ digraph FileBlogSystem {
 
     // Relationships
     LuceneSearchService -> ISearchService [arrowtail=empty, style=dashed];
-    LuceneSearchService -> IDisposable [arrowtail=empty];
     NotificationService -> INotificationService [arrowtail=empty, style=dashed];
     AdminService -> IAdminService [arrowtail=empty, style=dashed];
     UserService -> IUserService [arrowtail=empty, style=dashed];
     BlogPostService -> IBlogPostService [arrowtail=empty, style=dashed];
     CommentService -> ICommentService [arrowtail=empty, style=dashed];
-    ScheduledPostPublisher -> BackgroundService [arrowtail=empty];
-    NotificationHub -> Hub [arrowtail=empty];
     FilePostRepository -> IPostRepository [arrowtail=empty, style=dashed];
     FileCommentRepository -> ICommentRepository [arrowtail=empty, style=dashed];
     FileUserRepository -> IUserRepository [arrowtail=empty, style=dashed];
